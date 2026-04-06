@@ -1,0 +1,15 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY scanner.py .
+
+ENV SCANNER_DB=/data/scanner.db
+ENV SCAN_INTERVAL=6
+
+EXPOSE 8420
+
+VOLUME /data
+
+CMD ["python", "scanner.py", "--serve", "--ai"]

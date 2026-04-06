@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  laundromat-scanner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8420:8420"
+    volumes:
+      - scanner-data:/data
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SCAN_INTERVAL=6
+      - SCANNER_DB=/data/scanner.db
+    restart: unless-stopped
+
+  rfp-scanner:
+    build:
+      context: .
+      dockerfile: Dockerfile.rfp
+    ports:
+      - "8421:8421"
+    volumes:
+      - scanner-data:/data
+    environment:
+      - PLANETBIDS_EMAIL=${PLANETBIDS_EMAIL}
+      - PLANETBIDS_PASSWORD=${PLANETBIDS_PASSWORD}
+      - RFP_DB=/data/rfp_scanner.db
+      - RFP_SCAN_INTERVAL=4
+    restart: unless-stopped
+
+volumes:
+  scanner-data:
