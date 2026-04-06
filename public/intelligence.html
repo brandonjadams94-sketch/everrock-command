@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Everrock Intelligence</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06060b;font-family:'DM Sans',sans-serif;color:#e2e2ef;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+.m{font-family:'Fira Code',monospace}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#252540;border-radius:2px}
+.hdr{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid rgba(255,255,255,0.04);background:#0c0c14;flex-shrink:0}
+.tb{background:transparent;border:1px solid transparent;color:#5c5c78;padding:4px 12px;border-radius:4px;cursor:pointer;font-family:'Fira Code',monospace;font-size:7px;letter-spacing:1.5px}
+.tb.a{border-color:rgba(0,232,123,0.2);color:#00e87b;background:rgba(0,232,123,0.06)}
+.tb.ap{border-color:rgba(139,92,246,0.2);color:#8b5cf6;background:rgba(139,92,246,0.06)}
+.tb.ar{border-color:rgba(255,45,85,0.2);color:#ff2d55;background:rgba(255,45,85,0.06)}
+.sub{padding:3px 8px;border-radius:3px;cursor:pointer;font-family:'Fira Code',monospace;font-size:7px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#5c5c78}
+.sub.on{background:rgba(0,212,255,0.08);border-color:rgba(0,212,255,0.2);color:#00d4ff}
+.bd{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.pg{flex:1;display:none;flex-direction:column;overflow:hidden}
+.pg.active{display:flex}
+#map{flex:1;min-height:0}
+.leaflet-container{background:#0a0a14!important}
+.leaflet-control-zoom a{background:#12121c!important;color:#00d4ff!important;border-color:#252540!important}
+.leaflet-control-attribution{background:rgba(6,6,11,0.8)!important;color:#5c5c78!important;font-size:8px!important}
+.leaflet-control-attribution a{color:#00d4ff!important}
+.cp .leaflet-popup-content-wrapper{background:#0c0c14;color:#e2e2ef;border:1px solid #252540;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.7)}
+.cp .leaflet-popup-tip{background:#0c0c14;border:1px solid #252540}
+.cp .leaflet-popup-content{margin:10px 14px;font-family:'DM Sans',sans-serif;font-size:12px}
+.st{flex:1;background:#12121c;border:1px solid rgba(255,255,255,0.04);border-radius:5px;padding:8px;text-align:center}
+.sl{font-family:'Fira Code',monospace;font-size:6px;color:#5c5c78;letter-spacing:2px}
+.sv{font-size:20px;font-weight:700;line-height:1.2}
+.cd{background:#12121c;border:1px solid rgba(255,255,255,0.04);border-radius:6px;padding:10px;margin-bottom:6px}
+.kc{background:#12121c;border:1px solid rgba(255,255,255,0.04);border-radius:5px;padding:6px 7px;cursor:pointer;margin-bottom:3px}
+.kc:hover{background:#181828}
+</style>
+</head><body>
+
+<div class="hdr">
+  <div style="display:flex;align-items:center;gap:8px">
+    <div style="width:5px;height:5px;border-radius:50%;background:#00e87b;box-shadow:0 0 8px #00e87b"></div>
+    <span class="m" style="font-size:10px;font-weight:600;letter-spacing:5px;color:#00d4ff">EVERROCK</span>
+    <span class="m" style="font-size:10px;letter-spacing:5px;color:#2e2e44">INTELLIGENCE</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="tb a" id="t-l" onclick="sw('l')">LAUNDROMATS</button>
+    <button class="tb" id="t-b" onclick="sw('b')">BOTBUILT</button>
+    <button class="tb" id="t-v" onclick="sw('v')">VIX WAR ROOM</button>
+    <div style="width:1px;height:16px;background:rgba(255,255,255,0.04)"></div>
+    <span class="m" style="font-size:7px;color:#5c5c78">VIX</span>
+    <span id="vh" style="font-size:12px;font-weight:700;color:#ffb800">21.40</span>
+    <span class="m" id="ck" style="font-size:9px;color:#00d4ff"></span>
+  </div>
+</div>
+
+<div class="bd">
+  <!-- LAUNDROMAT -->
+  <div class="pg active" id="p-l">
+    <div style="padding:6px 8px 0;display:flex;gap:3px">
+      <button class="sub on" id="sl-m" onclick="slv('m')">MAP</button>
+      <button class="sub" id="sl-p" onclick="slv('p')">PIPELINE</button>
+      <div style="margin:0 4px;width:1px;height:16px;background:rgba(255,255,255,0.04)"></div>
+      <button class="sub on" id="ly-a" onclick="tl('a')">ALL</button>
+      <button class="sub" id="ly-h" onclick="tl('h')">HEATMAP</button>
+    </div>
+    <div id="mv-m" style="flex:1;padding:8px;display:flex;flex-direction:column;gap:8px">
+      <div id="map" style="flex:1;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.04)"></div>
+      <div style="display:flex;gap:6px">
+        <div class="st"><div class="sl">COMPETITORS</div><div class="sv" style="color:#ff2d55">10</div></div>
+        <div class="st"><div class="sl">AVG RATING</div><div class="sv" style="color:#ffb800">3.7</div></div>
+        <div class="st"><div class="sl">YOUR TARGETS</div><div class="sv" style="color:#00e87b">2</div></div>
+        <div class="st"><div class="sl">BELL GARDENS POP</div><div class="sv" style="color:#00d4ff">42K</div></div>
+        <div class="st"><div class="sl">RENTER %</div><div class="sv" style="color:#8b5cf6">78%</div></div>
+      </div>
+    </div>
+    <div id="mv-p" style="flex:1;padding:8px;display:none;overflow:auto" ></div>
+  </div>
+
+  <!-- BOTBUILT -->
+  <div class="pg" id="p-b"><div style="padding:8px;overflow:auto;flex:1" id="bb"></div></div>
+
+  <!-- VIX -->
+  <div class="pg" id="p-v"><div style="padding:8px;overflow:auto;flex:1" id="vx"></div></div>
+</div>
+
+<script>
+const D=[
+  {id:"c1",n:"Alligator Laundry",la:33.9770,lo:-118.1550,r:4.6,rv:185,t:"target",s:"Evaluating",e:"Card system, Dexter machines",sv:"Full-svc, Fluff&Fold, P/U Delivery, Commercial",h:"7AM-10PM",p:"$3.50-8.00/wash",nt:"Since 2010. Card-based, bonus credits. Clean, spacious, vending."},
+  {id:"c2",n:"Round-N-Round",la:34.0050,lo:-118.1520,r:3.8,rv:12,t:"target",s:"Under Contract $440K",e:"2014 Speed Queen + 20yr mix",sv:"Self-serve",h:"6AM-10PM",p:"$3-6/wash",nt:"Hub location. Equipment replacement ROI net-positive Day 1."},
+  {id:"c3",n:"Sparklean Laundry",la:33.9830,lo:-118.1480,r:4.1,rv:40,t:"c",e:"Card system, mixed condition",sv:"Self, Fluff&Fold, Commercial",h:"6AM-11PM",p:"$3.50-7/wash",nt:"40+ years in business. Maintenance challenges recently."},
+  {id:"c4",n:"Laundry Plus",la:33.9710,lo:-118.1610,r:3.5,rv:25,t:"c",e:"Coin-operated, basic",sv:"Self-serve",h:"6AM-10PM",p:"$2.75-5.50/wash",nt:"Lower price point. Basic but tidy."},
+  {id:"c5",n:"Coin Op-Laundry",la:33.9690,lo:-118.1440,r:3.2,rv:8,t:"c",e:"Coin-operated, dated",sv:"Self-serve only",h:"7AM-10PM",p:"$2.50-5/wash",nt:"Budget. Near mini-mart. Last wash 8:30PM."},
+  {id:"c6",n:"Kleen Laundry",la:33.9750,lo:-118.1670,r:3.4,rv:15,t:"c",e:"Coin-operated, mixed reliability",sv:"Self-serve",h:"6AM-10PM",p:"$3-6/wash",nt:"Spacious with parking. Machine reliability varies."},
+  {id:"c7",n:"Lavanderia Eastern",la:33.9780,lo:-118.1380,r:3.6,rv:18,t:"c",e:"Coin-operated",sv:"Self-serve",h:"6AM-11PM",p:"$3-6/wash",nt:"7930 Eastern Ave."},
+  {id:"c8",n:"A&D Laundry",la:33.9850,lo:-118.1560,r:3.4,rv:10,t:"c",e:"Coin, older",sv:"Self-serve",h:"7AM-9PM",p:"$2.75-5.50/wash"},
+  {id:"c9",n:"Sparklean HP",la:33.9880,lo:-118.1830,r:4.2,rv:60,t:"c",e:"Card system",sv:"Full-svc, P/U, Commercial",h:"6AM-11PM",p:"$3.50-7/wash",nt:"Huntington Park. Same ownership as BG."},
+  {id:"c10",n:"Quick Wash Maywood",la:33.9870,lo:-118.1720,r:3.7,rv:22,t:"c",e:"Mixed coin/card",sv:"Self, Drop-off",h:"7AM-10PM",p:"$3-6.50/wash"},
+  {id:"c11",n:"EZ Clean Commerce",la:33.9950,lo:-118.1350,r:3.9,rv:35,t:"c",e:"Newer machines",sv:"Self, Fluff&Fold",h:"6AM-11PM",p:"$3.50-7/wash",nt:"Commerce area. Good demographics."},
+  {id:"c12",n:"SG Wash House",la:33.9600,lo:-118.1800,r:3.3,rv:14,t:"c",e:"Coin-operated",sv:"Self-serve only",h:"7AM-9PM",p:"$2.50-5/wash"},
+];
+
+const BB=[
+  {n:"Manolin",co:"Neurosurgeon Office",vt:"Medical",st:"lead",v:850,nt:"Referral — scheduling automation",pr:"high",sr:"Referral"},
+  {n:"Mom's Friend",co:"10 Med Spas",vt:"Medical",st:"lead",v:8500,nt:"10 locations = 10x MRR. Booking, reviews, recalls",pr:"high",sr:"Referral"},
+  {n:"Dr. Patel",co:"Patel Dentistry",vt:"Dental",ph:"(323) 555-0189",st:"contacted",v:850,nt:"Appointment reminders interest",pr:"med",sr:"Shay"},
+  {n:"Smile Design",co:"Smile Design Studio",vt:"Dental",ph:"(310) 555-0234",st:"demo",v:850,nt:"Demo Apr 10. Full suite",pr:"high",sr:"Shay"},
+  {n:"Bright Teeth",co:"Bright Teeth LA",vt:"Dental",ph:"(213) 555-0156",st:"contacted",v:850,nt:"Left VM — follow up Mon",pr:"med",sr:"Shay"},
+  {n:"CleanPro",co:"CleanPro Home Svcs",vt:"Home Services",ph:"(818) 555-0177",st:"proposal",v:850,nt:"Sent pricing. Lead gen + reviews",pr:"med",sr:"Cold"},
+  {n:"Ace Plumbing",co:"Ace Plumbing",vt:"Home Services",ph:"(323) 555-0211",st:"lead",v:850,nt:"200+ reviews, growing",pr:"low",sr:"Research"},
+  {n:"Dr. Kim",co:"Kim Orthodontics",vt:"Dental",ph:"(562) 555-0198",st:"lead",v:850,nt:"3 Long Beach locations",pr:"med",sr:"Shay"},
+  {n:"Luxe Aesthetics",co:"Luxe Med Spa",vt:"Medical",ph:"(310) 555-0445",st:"contacted",v:850,nt:"BH. AI receptionist interest",pr:"med",sr:"Cold"},
+  {n:"Valley Dental",co:"Valley Dental Group",vt:"Dental",ph:"(818) 555-0322",st:"lead",v:850,nt:"2 SFV locations",pr:"low",sr:"Shay"},
+  {n:"Fresh Air HVAC",co:"Fresh Air HVAC",vt:"Home Services",st:"lead",v:850,nt:"Dispatch-heavy",pr:"low",sr:"Research"},
+  {n:"Glow Skin",co:"Glow Skin & Laser",vt:"Medical",ph:"(323) 555-0399",st:"lead",v:850,nt:"Mom's friend network?",pr:"med",sr:"Referral"},
+];
+
+const VN=[{t:"30m",x:"Fed minutes hawkish — rate cut prob drops to 28%",i:"HIGH",d:"↑",c:"#ff2d55"},{t:"2h",x:"China retaliatory tariffs $50B",i:"HIGH",d:"↑",c:"#ff2d55"},{t:"4h",x:"CPI 2.4% YoY — below consensus",i:"MED",d:"↓",c:"#00e87b"},{t:"6h",x:"NVDA beats — AI capex +40%",i:"MED",d:"↓",c:"#00e87b"},{t:"1d",x:"10Y breaks 4.5% — bond selloff",i:"HIGH",d:"↑",c:"#ff2d55"}];
+const VT=[{r:"25+",s:"Sell Iron Condor",k:"SPX 5600/5550P — 5900/5950C",d:"30-45 DTE",e:"VIX mean-reverts 85% in 2wk"},{r:"20-25",s:"Sell Put Spread",k:"XSP 570/560P",d:"21-30 DTE",e:"Elevated premium"},{r:"15-20",s:"Buy Straddle",k:"SPX ATM",d:"7-14 DTE",e:"Vol expansion on catalyst"},{r:"<15",s:"Buy VIX Calls",k:"VIX 18-20C",d:"45-60 DTE",e:"Floor pricing, asymmetric"}];
+
+let map,vix=21.4,hc=[];
+
+function initMap(){
+  map=L.map('map',{zoomControl:true}).setView([33.985,-118.155],14);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OSM &copy; CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+
+  // Radius circles
+  [804,1609,3218].forEach((r,i)=>{
+    L.circle([34.005,-118.152],{radius:r,color:'#00d4ff',weight:1,fillColor:'#00d4ff',fillOpacity:i?0.015:0.03,dashArray:i?'8,6':null}).addTo(map);
+  });
+
+  D.forEach(c=>{
+    const isTgt=c.t==='target';
+    const col=isTgt?'#00e87b':'#ff2d55';
+    const rc=c.r>=4?'#ffb800':c.r>=3.5?'#5c5c78':'#ff2d55';
+    const sz=isTgt?16:12;
+    
+    const icon=L.divIcon({className:'',iconSize:[sz,sz],iconAnchor:[sz/2,sz/2],
+      html:isTgt
+        ?`<div style="width:${sz}px;height:${sz}px;background:#00e87b;border:2px solid #eeeef4;border-radius:3px;box-shadow:0 0 12px #00e87b"></div>`
+        :`<div style="width:${sz}px;height:${sz}px;border-radius:50%;background:rgba(255,45,85,0.12);border:1.5px solid rgba(255,45,85,0.5);display:flex;align-items:center;justify-content:center"><div style="width:4px;height:4px;border-radius:50%;background:#ff2d55"></div></div>`
+    });
+
+    const mk=L.marker([c.la,c.lo],{icon}).addTo(map);
+    const stars='★'.repeat(Math.floor(c.r))+(c.r%1>=0.5?'½':'');
+    mk.bindPopup(`<div style="min-width:240px">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">
+        <strong style="font-size:14px;color:#eeeef4">${c.n}</strong>
+        ${isTgt?`<span class="m" style="font-size:7px;color:#00e87b;padding:2px 6px;border:1px solid rgba(0,232,123,0.3);border-radius:3px;white-space:nowrap">${c.s}</span>`:''}
+      </div>
+      <div style="margin-bottom:8px"><span style="color:${rc};font-size:14px;letter-spacing:1px">${stars}</span> <span class="m" style="font-size:12px;color:${rc}">${c.r}</span> <span class="m" style="font-size:10px;color:#5c5c78">(${c.rv} reviews)</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px">
+        <div style="background:rgba(255,255,255,0.03);padding:5px 7px;border-radius:4px"><div class="m" style="font-size:7px;color:#5c5c78;letter-spacing:1px">EQUIPMENT</div><div style="font-size:10px;color:#e2e2ef;margin-top:2px">${c.e}</div></div>
+        <div style="background:rgba(255,255,255,0.03);padding:5px 7px;border-radius:4px"><div class="m" style="font-size:7px;color:#5c5c78;letter-spacing:1px">PRICING</div><div style="font-size:10px;color:#e2e2ef;margin-top:2px">${c.p}</div></div>
+      </div>
+      <div style="font-size:10px;color:#5c5c78;margin-bottom:3px"><strong style="color:#e2e2ef">Services:</strong> ${c.sv}</div>
+      <div style="font-size:10px;color:#5c5c78"><strong style="color:#e2e2ef">Hours:</strong> ${c.h}</div>
+      ${c.nt?`<div style="font-size:9px;color:#5c5c78;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06);font-style:italic">${c.nt}</div>`:''}
+    </div>`,{className:'cp',maxWidth:300});
+
+    if(isTgt) L.marker([c.la+0.0014,c.lo],{icon:L.divIcon({className:'',html:`<div class="m" style="font-size:8px;color:#00e87b;text-shadow:0 0 6px #000,0 0 3px #000;white-space:nowrap">${c.n}</div>`,iconSize:[120,15],iconAnchor:[60,15]})}).addTo(map);
+  });
+}
+
+function tl(l){
+  document.querySelectorAll('#ly-a,#ly-h').forEach(b=>b.classList.remove('on'));
+  document.getElementById('ly-'+(l==='a'?'a':'h')).classList.add('on');
+  hc.forEach(c=>map.removeLayer(c));hc=[];
+  if(l==='h'){
+    [{la:33.977,lo:-118.155,r:500,i:0.95},{la:33.984,lo:-118.190,r:600,i:0.75},{la:33.987,lo:-118.172,r:400,i:0.85},{la:34.001,lo:-118.160,r:450,i:0.80},{la:33.955,lo:-118.180,r:700,i:0.55}].forEach(z=>{
+      const h=120-z.i*120;
+      hc.push(L.circle([z.la,z.lo],{radius:z.r,color:`hsl(${h},100%,50%)`,weight:0,fillColor:`hsl(${h},100%,50%)`,fillOpacity:z.i*0.15}).addTo(map));
+    });
+  }
+}
+
+function rBB(){
+  const stg=[{k:'lead',l:'LEAD',c:'#00d4ff'},{k:'contacted',l:'CONTACTED',c:'#ffb800'},{k:'demo',l:'DEMO',c:'#8b5cf6'},{k:'proposal',l:'PROPOSAL',c:'#ff6d00'},{k:'negotiating',l:'NEGOTIATING',c:'#ffb800'},{k:'won',l:'WON',c:'#00e87b'},{k:'lost',l:'LOST',c:'#ff2d55'}];
+  const pm=BB.filter(l=>!['lead','won','lost'].includes(l.st)).reduce((s,l)=>s+l.v,0);
+  let h=`<div style="display:flex;gap:6px;margin-bottom:8px">
+    <div class="st"><div class="sl">LEADS</div><div class="sv" style="color:#00d4ff">${BB.length}</div></div>
+    <div class="st"><div class="sl">PIPELINE MRR</div><div class="sv" style="color:#ffb800">$${pm.toLocaleString()}</div></div>
+    <div class="st"><div class="sl">HIGH PRI</div><div class="sv" style="color:#ff2d55">${BB.filter(l=>l.pr==='high').length}</div></div>
+    <div class="st"><div class="sl">WON</div><div class="sv" style="color:#00e87b">0</div></div>
+  </div><div style="display:flex;gap:5px;height:calc(100vh - 160px);overflow:auto">`;
+  stg.forEach(s=>{
+    const it=BB.filter(l=>l.st===s.k);
+    h+=`<div style="flex:1;min-width:130px;display:flex;flex-direction:column"><div style="padding:5px 7px;border-bottom:2px solid ${s.c};margin-bottom:5px;display:flex;justify-content:space-between"><span class="m" style="font-size:7px;color:${s.c};letter-spacing:2px">${s.l}</span><span class="m" style="font-size:9px;color:#5c5c78">${it.length}</span></div><div style="flex:1;overflow:auto">`;
+    it.forEach(l=>{
+      const pc=l.pr==='high'?'#ff2d55':l.pr==='med'?'#ffb800':'#5c5c78';
+      h+=`<div class="kc"><div style="font-size:11px;color:#eeeef4;font-weight:500">${l.n}</div><div style="font-size:9px;color:#5c5c78">${l.co}</div><div style="display:flex;justify-content:space-between;margin-top:3px"><span class="m" style="font-size:8px;color:#00e87b">$${l.v}/mo</span><span class="m" style="font-size:6px;color:${pc};padding:1px 4px;border-radius:2px;background:${pc}12">${l.pr.toUpperCase()}</span></div><div style="display:flex;gap:3px;margin-top:3px"><span class="m" style="font-size:6px;color:#8b5cf6;padding:1px 4px;background:rgba(139,92,246,0.08);border-radius:2px">${l.vt}</span><span class="m" style="font-size:6px;color:#5c5c78;padding:1px 4px;background:rgba(255,255,255,0.03);border-radius:2px">${l.sr}</span></div>${l.nt?`<div style="font-size:8px;color:#2e2e44;margin-top:3px">${l.nt}</div>`:''}</div>`;
+    });
+    h+=`</div></div>`;
+  });
+  h+=`</div>`;
+  document.getElementById('bb').innerHTML=h;
+}
+
+function rVix(){
+  const vc=vix>25?'#ff2d55':vix>20?'#ffb800':vix>15?'#00d4ff':'#00e87b';
+  const pct=Math.min(95,Math.max(5,((vix-12)/20)*100));
+  const ai=vix>25?0:vix>20?1:vix>15?2:3;
+  let h=`<div class="cd" style="text-align:center;padding:16px"><div class="m" style="font-size:8px;color:#5c5c78;letter-spacing:3px">CBOE VIX INDEX</div><div style="font-size:52px;font-weight:800;color:${vc};line-height:1;margin-top:4px">${vix.toFixed(2)}</div><div class="m" style="font-size:10px;color:${vc};margin-top:6px">${vix>25?'▲ DANGER':vix>20?'▲ ELEVATED':'▼ NORMAL'}</div><div style="position:relative;height:8px;background:#06060b;border-radius:4px;margin-top:14px"><div style="position:absolute;left:0;height:100%;width:${pct}%;background:linear-gradient(90deg,#00e87b,#ffb800,#ff2d55);border-radius:4px"></div><div style="position:absolute;left:${pct}%;top:-2px;width:4px;height:12px;background:#eeeef4;border-radius:2px;transform:translateX(-50%)"></div></div><div style="display:flex;justify-content:space-between;margin-top:4px" class="m"><span style="font-size:7px;color:#2e2e44">12</span><span style="font-size:7px;color:#2e2e44">20</span><span style="font-size:7px;color:#2e2e44">30</span><span style="font-size:7px;color:#2e2e44">40</span></div></div>`;
+  h+=`<div class="cd"><div class="m" style="font-size:8px;color:#5c5c78;letter-spacing:3px;margin-bottom:8px">WHY IT'S MOVING</div>`;
+  VN.forEach(n=>{h+=`<div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><div style="width:20px;text-align:center;font-size:16px;color:${n.c}">${n.d}</div><div style="flex:1"><div style="font-size:12px;color:#e2e2ef;line-height:1.3">${n.x}</div><div class="m" style="font-size:9px;color:#5c5c78;margin-top:2px">${n.t} ago · <span style="color:${n.c}">${n.i} IMPACT</span></div></div></div>`;});
+  h+=`</div><div class="cd"><div class="m" style="font-size:8px;color:#5c5c78;letter-spacing:3px;margin-bottom:8px">SCALP OPPORTUNITIES</div>`;
+  VT.forEach((t,i)=>{const a=i===ai;h+=`<div style="padding:8px 10px;margin-bottom:4px;border-radius:6px;background:${a?'rgba(255,184,0,0.06)':'#06060b'};border:1px solid ${a?'#ffb800':'rgba(255,255,255,0.04)'};opacity:${a?1:0.35}"><div style="display:flex;justify-content:space-between"><div><span class="m" style="font-size:9px;color:${a?'#ffb800':'#5c5c78'};font-weight:600">${t.r}</span><span style="font-size:13px;color:${a?'#eeeef4':'#5c5c78'};margin-left:8px;font-weight:500">${t.s}</span></div><span class="m" style="font-size:8px;color:${a?'#00e87b':'#2e2e44'};padding:2px 8px;border-radius:3px;background:${a?'rgba(0,232,123,0.1)':'transparent'}">${a?'READY':'WAIT'}</span></div>${a?`<div style="margin-top:6px"><div class="m" style="font-size:10px;color:#e2e2ef">${t.k} · ${t.d}</div><div style="font-size:10px;color:#5c5c78;margin-top:2px">${t.e}</div></div>`:''}</div>`;});
+  h+=`</div>`;
+  document.getElementById('vx').innerHTML=h;
+}
+
+function sw(t){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tb').forEach(b=>{b.classList.remove('a','ap','ar')});
+  document.getElementById('p-'+t).classList.add('active');
+  const cls=t==='l'?'a':t==='b'?'ap':'ar';
+  document.getElementById('t-'+t).classList.add(cls);
+  if(t==='b')rBB();if(t==='v')rVix();
+  if(t==='l')setTimeout(()=>map&&map.invalidateSize(),100);
+}
+
+function slv(v){
+  document.getElementById('sl-m').classList.toggle('on',v==='m');
+  document.getElementById('sl-p').classList.toggle('on',v==='p');
+  document.getElementById('mv-m').style.display=v==='m'?'flex':'none';
+  document.getElementById('mv-p').style.display=v==='p'?'flex':'none';
+  if(v==='m')setTimeout(()=>map&&map.invalidateSize(),100);
+}
+
+setInterval(()=>{document.getElementById('ck').textContent=new Date().toLocaleTimeString('en-US',{hour12:false})},1000);
+setInterval(()=>{vix=Math.max(12,Math.min(35,vix+(Math.random()-0.48)*0.3));const vc=vix>25?'#ff2d55':vix>20?'#ffb800':'#00e87b';document.getElementById('vh').textContent=vix.toFixed(2);document.getElementById('vh').style.color=vc;},3000);
+
+window.addEventListener('load',()=>{initMap();rBB();rVix();document.getElementById('ck').textContent=new Date().toLocaleTimeString('en-US',{hour12:false});});
+</script>
+</body></html>
