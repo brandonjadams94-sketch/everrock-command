@@ -24,7 +24,7 @@ const saveData = async (key, val) => {
 
 // ─── SCANNER API ───
 // Set your VPS URL here or use REACT_APP_SCANNER_API env variable
-const SCANNER_API = process.env.REACT_APP_SCANNER_API || "http://localhost:8420";
+const SCANNER_API = process.env.REACT_APP_SCANNER_API || "";
 
 const api = {
   async fetchListings(params = {}) {
@@ -69,7 +69,7 @@ const api = {
 };
 
 // ─── RFP SCANNER API (port 8421) ───
-const RFP_API = (process.env.REACT_APP_SCANNER_API || "http://localhost:8420").replace(":8420", ":8421");
+const RFP_API = (process.env.REACT_APP_SCANNER_API || "").replace("", "/rfpapi");
 
 const rfpApi = {
   async fetchRFPs(params = {}) {
