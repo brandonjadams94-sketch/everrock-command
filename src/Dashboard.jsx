@@ -906,6 +906,8 @@ export function Dashboard() {
     { id: "overview", label: "OVERVIEW", icon: Layers },
     { id: "deals", label: "DEALS", icon: Building2 },
     { id: "watchlist", label: "SCANNER", icon: Search },
+    { id: "acqmap", label: "MAP", icon: MapPin },
+    { id: "botbuilt", label: "BOTBUILT", icon: Zap },
     { id: "sdsu", label: "CONTRACTS", icon: FileText },
     { id: "markets", label: "MARKETS", icon: BarChart3 },
     { id: "news", label: "NEWS", icon: Globe },
@@ -1263,6 +1265,20 @@ export function Dashboard() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ═══ ACQUISITION MAP ═══ */}
+        {activeTab === "acqmap" && (
+          <div style={{ animation: "fadeUp 0.4s ease", height: "calc(100vh - 100px)" }}>
+            <iframe src="/intelligence.html" style={{ width: "100%", height: "100%", border: "none", borderRadius: 8 }} title="Deal Intelligence Map" />
+          </div>
+        )}
+
+        {/* ═══ BOTBUILT CRM ═══ */}
+        {activeTab === "botbuilt" && (
+          <div style={{ animation: "fadeUp 0.4s ease", height: "calc(100vh - 100px)" }}>
+            <iframe src="/intelligence.html#botbuilt" style={{ width: "100%", height: "100%", border: "none", borderRadius: 8 }} title="BotBuilt CRM" />
           </div>
         )}
 
