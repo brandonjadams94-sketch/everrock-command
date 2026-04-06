@@ -24,7 +24,7 @@ const saveData = async (key, val) => {
 
 // ─── SCANNER API ───
 // Set your VPS URL here or use REACT_APP_SCANNER_API env variable
-const SCANNER_API = "";
+const SCANNER_API = process.env.REACT_APP_SCANNER_API || "http://localhost:8420";
 
 const api = {
   async fetchListings(params = {}) {
@@ -69,13 +69,13 @@ const api = {
 };
 
 // ─── RFP SCANNER API (port 8421) ───
-const RFP_API = "/rfpapi";
+const RFP_API = (process.env.REACT_APP_SCANNER_API || "http://localhost:8420").replace(":8420", ":8421");
 
 const rfpApi = {
   async fetchRFPs(params = {}) {
     const qs = new URLSearchParams(params).toString();
     try {
-      const r = await fetch(`${RFP_API}/rfps?${qs}`);
+      const r = await fetch(`${RFP_API}/api/rfps?${qs}`);
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const data = await r.json();
       return data.rfps.map(rfpToFrontend);
@@ -85,22 +85,22 @@ const rfpApi = {
     }
   },
   async fetchStats() {
-    try { const r = await fetch(`${RFP_API}/rfps/stats`); return r.ok ? await r.json() : null; } catch { return null; }
+    try { const r = await fetch(`${RFP_API}/api/rfps/stats`); return r.ok ? await r.json() : null; } catch { return null; }
   },
   async triggerScan() {
-    try { const r = await fetch(`${RFP_API}/rfps/scan`, { method: "POST" }); return r.ok ? await r.json() : null; } catch { return null; }
+    try { const r = await fetch(`${RFP_API}/api/rfps/scan`, { method: "POST" }); return r.ok ? await r.json() : null; } catch { return null; }
   },
   async updateStatus(id, status) {
-    try { await fetch(`${RFP_API}/rfps/${id}/status`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) }); } catch {}
+    try { await fetch(`${RFP_API}/api/rfps/${id}/status`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) }); } catch {}
   },
   async updateStar(id, starred) {
-    try { await fetch(`${RFP_API}/rfps/${id}/star`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ starred }) }); } catch {}
+    try { await fetch(`${RFP_API}/api/rfps/${id}/star`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ starred }) }); } catch {}
   },
   async updateNotes(id, notes) {
-    try { await fetch(`${RFP_API}/rfps/${id}/notes`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }) }); } catch {}
+    try { await fetch(`${RFP_API}/api/rfps/${id}/notes`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }) }); } catch {}
   },
   async checkHealth() {
-    try { const r = await fetch(`${RFP_API}/rfps/health`); return r.ok; } catch { return false; }
+    try { const r = await fetch(`${RFP_API}/api/rfps/health`); return r.ok; } catch { return false; }
   }
 };
 
@@ -906,6 +906,8 @@ export function Dashboard() {
     { id: "overview", label: "OVERVIEW", icon: Layers },
     { id: "deals", label: "DEALS", icon: Building2 },
     { id: "watchlist", label: "SCANNER", icon: Search },
+    { id: "acqmap", label: "MAP", icon: MapPin },
+    { id: "botbuilt", label: "BOTBUILT", icon: Zap },
     { id: "sdsu", label: "CONTRACTS", icon: FileText },
     { id: "markets", label: "MARKETS", icon: BarChart3 },
     { id: "news", label: "NEWS", icon: Globe },
@@ -1263,6 +1265,20 @@ export function Dashboard() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ═══ ACQUISITION MAP ═══ */}
+        {activeTab === "acqmap" && (
+          <div style={{ animation: "fadeUp 0.4s ease", height: "calc(100vh - 100px)" }}>
+            <iframe src="/intelligence.html" style={{ width: "100%", height: "100%", border: "none", borderRadius: 8 }} title="Deal Intelligence Map" />
+          </div>
+        )}
+
+        {/* ═══ BOTBUILT CRM ═══ */}
+        {activeTab === "botbuilt" && (
+          <div style={{ animation: "fadeUp 0.4s ease", height: "calc(100vh - 100px)" }}>
+            <iframe src="/intelligence.html#botbuilt" style={{ width: "100%", height: "100%", border: "none", borderRadius: 8 }} title="BotBuilt CRM" />
           </div>
         )}
 

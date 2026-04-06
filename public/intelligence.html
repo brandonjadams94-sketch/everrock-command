@@ -230,6 +230,9 @@ function slv(v){
 setInterval(()=>{document.getElementById('ck').textContent=new Date().toLocaleTimeString('en-US',{hour12:false})},1000);
 setInterval(()=>{vix=Math.max(12,Math.min(35,vix+(Math.random()-0.48)*0.3));const vc=vix>25?'#ff2d55':vix>20?'#ffb800':'#00e87b';document.getElementById('vh').textContent=vix.toFixed(2);document.getElementById('vh').style.color=vc;},3000);
 
-window.addEventListener('load',()=>{initMap();rBB();rVix();document.getElementById('ck').textContent=new Date().toLocaleTimeString('en-US',{hour12:false});});
+window.addEventListener('load',()=>{initMap();rBB();rVix();document.getElementById('ck').textContent=new Date().toLocaleTimeString('en-US',{hour12:false});
+  if(window.location.hash==='#botbuilt')sw('b');
+  if(window.location.hash==='#vix')sw('v');
+});
 </script>
 </body></html>
