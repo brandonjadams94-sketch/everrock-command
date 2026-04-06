@@ -3,8 +3,26 @@
   publish = "build"
 
 [[redirects]]
-  from = "/api/*"
-  to = "http://64.23.130.230:8420/api/:splat"
+  from = "/api/listings*"
+  to = "http://64.23.130.230:8420/api/listings:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/scan"
+  to = "http://64.23.130.230:8420/api/scan"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/stats"
+  to = "http://64.23.130.230:8420/api/stats"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/health"
+  to = "http://64.23.130.230:8420/api/health"
   status = 200
   force = true
 

@@ -24,7 +24,7 @@ const saveData = async (key, val) => {
 
 // ─── SCANNER API ───
 // Set your VPS URL here or use REACT_APP_SCANNER_API env variable
-const SCANNER_API = "/api";
+const SCANNER_API = "";
 
 const api = {
   async fetchListings(params = {}) {
