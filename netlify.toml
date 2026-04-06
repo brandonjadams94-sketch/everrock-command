@@ -3,6 +3,12 @@
   publish = "build"
 
 [[redirects]]
+  from = "/rfpapi/*"
+  to = "http://64.23.130.230:8421/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/listings*"
   to = "http://64.23.130.230:8420/api/listings:splat"
   status = 200
@@ -27,12 +33,7 @@
   force = true
 
 [[redirects]]
-  from = "/rfpapi/*"
-  to = "http://64.23.130.230:8421/api/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  conditions = {Role = ["admin"]}
