@@ -75,7 +75,7 @@ const rfpApi = {
   async fetchRFPs(params = {}) {
     const qs = new URLSearchParams(params).toString();
     try {
-      const r = await fetch(`${RFP_API}/api/rfps?${qs}`);
+      const r = await fetch(`${RFP_API}/rfps?${qs}`);
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const data = await r.json();
       return data.rfps.map(rfpToFrontend);
@@ -85,22 +85,22 @@ const rfpApi = {
     }
   },
   async fetchStats() {
-    try { const r = await fetch(`${RFP_API}/api/rfps/stats`); return r.ok ? await r.json() : null; } catch { return null; }
+    try { const r = await fetch(`${RFP_API}/rfps/stats`); return r.ok ? await r.json() : null; } catch { return null; }
   },
   async triggerScan() {
-    try { const r = await fetch(`${RFP_API}/api/rfps/scan`, { method: "POST" }); return r.ok ? await r.json() : null; } catch { return null; }
+    try { const r = await fetch(`${RFP_API}/rfps/scan`, { method: "POST" }); return r.ok ? await r.json() : null; } catch { return null; }
   },
   async updateStatus(id, status) {
-    try { await fetch(`${RFP_API}/api/rfps/${id}/status`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) }); } catch {}
+    try { await fetch(`${RFP_API}/rfps/${id}/status`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) }); } catch {}
   },
   async updateStar(id, starred) {
-    try { await fetch(`${RFP_API}/api/rfps/${id}/star`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ starred }) }); } catch {}
+    try { await fetch(`${RFP_API}/rfps/${id}/star`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ starred }) }); } catch {}
   },
   async updateNotes(id, notes) {
-    try { await fetch(`${RFP_API}/api/rfps/${id}/notes`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }) }); } catch {}
+    try { await fetch(`${RFP_API}/rfps/${id}/notes`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }) }); } catch {}
   },
   async checkHealth() {
-    try { const r = await fetch(`${RFP_API}/api/rfps/health`); return r.ok; } catch { return false; }
+    try { const r = await fetch(`${RFP_API}/rfps/health`); return r.ok; } catch { return false; }
   }
 };
 
